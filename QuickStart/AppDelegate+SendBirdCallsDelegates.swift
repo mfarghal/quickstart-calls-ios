@@ -12,8 +12,12 @@ import SendBirdCalls
 extension AppDelegate: SendBirdCallDelegate, DirectCallDelegate {
     // MARK: SendBirdCallDelegate
     func didStartRinging(_ call: DirectCall) {
-        call.delegate = self    // To receive call event through `DirectCallDelegate`
+        guard call.isEnded == false else {
+            // This will occur when you enter an ended call such as a cancelled call. You may want to present call history view.
+            return
+        }
         
+        call.delegate = self // To receive call event through `DirectCallDelegate`
         guard let uuid = call.callUUID else { return }
         guard CXCallController.shared.callObserver.calls.isEmpty else { return }  // Should be cross-checked with state to prevent weird event processings
         
